@@ -9,10 +9,8 @@ import numpy as np
 import openpyxl
 import pandas as pd
 from openpyxl.styles import Font, PatternFill
-from openpyxl.utils import get_column_letter
 
 from app.schemas.merge import MergeConfig, NormalizeRules
-
 
 # --------------------------------------------------------------------------- #
 # 基础工具
@@ -227,7 +225,11 @@ _ERR_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="sol
 _MISS_FILL = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
 
 
-def _add_df_sheet(wb: openpyxl.Workbook, title: str, df: pd.DataFrame) -> openpyxl.worksheet.worksheet.Worksheet:
+def _add_df_sheet(
+    wb: openpyxl.Workbook,
+    title: str,
+    df: pd.DataFrame,
+) -> openpyxl.worksheet.worksheet.Worksheet:
     name = _unique_sheet_name(wb, title)
     ws = wb.create_sheet(title=name)
     cols = [str(c) for c in df.columns]
@@ -263,7 +265,9 @@ def _add_report_sheets(wb, anomalies, dup_records, log_rows, missing, config):
     if config.add_log and log_rows:
         _add_df_sheet(wb, "导入日志", pd.DataFrame(log_rows))
     if missing:
-        mdf = pd.DataFrame([{"缺失Sheet(逻辑名)": m, "状态": "未在任何文件中出现"} for m in missing])
+        mdf = pd.DataFrame(
+            [{"缺失Sheet(逻辑名)": m, "状态": "未在任何文件中出现"} for m in missing]
+        )
         ws = _add_df_sheet(wb, "缺失Sheet报告", mdf)
         for r in range(2, len(mdf) + 2):
             _highlight_row(ws, r)
@@ -365,7 +369,9 @@ def merge_excel(
         seen_keys: dict[tuple, str] = {}
         kept: list[pd.DataFrame] = []
         for df, filename, raw_name in items:
-            df = _validate_and_dedup(df, filename, raw_name, config, anomalies, dup_records, seen_keys)
+            df = _validate_and_dedup(
+                df, filename, raw_name, config, anomalies, dup_records, seen_keys
+            )
             if not df.empty:
                 kept.append(df)
         if kept:

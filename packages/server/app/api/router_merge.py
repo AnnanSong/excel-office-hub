@@ -1,42 +1,14 @@
-import json
 from pathlib import Path
 
 from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
+from app.api._parsers import parse_json_dict, parse_json_list, parse_json_model
 from app.engines.merge import merge_excel
 from app.schemas.job import ApiResponse
 from app.schemas.merge import MergeConfig, NormalizeRules
 from app.storage.files import save_result, save_upload
 
 router = APIRouter()
-
-
-def _parse_json_list(value: str | None) -> list[str] | None:
-    if not value:
-        return None
-    try:
-        parsed = json.loads(value)
-        return [str(x) for x in parsed] if isinstance(parsed, list) else [str(x).strip() for x in value.split(",") if x.strip()]
-    except json.JSONDecodeError:
-        return [str(x).strip() for x in value.split(",") if x.strip()]
-
-
-def _parse_json_dict(value: str | None) -> dict | None:
-    if not value:
-        return None
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail=f"参数不是合法 JSON: {value}")
-
-
-def _parse_json_obj(value: str | None, model):
-    if not value:
-        return model()
-    try:
-        return model(**json.loads(value))
-    except (json.JSONDecodeError, TypeError, ValueError) as e:
-        raise HTTPException(status_code=400, detail=f"参数解析失败: {e}") from e
 
 
 @router.post("/", response_model=ApiResponse)
@@ -72,15 +44,15 @@ async def merge_files(
     config = MergeConfig(
         merge_mode=merge_mode,  # type: ignore[arg-type]
         sheet_match=sheet_match,  # type: ignore[arg-type]
-        normalize_rules=_parse_json_obj(normalize_rules, NormalizeRules),
+        normalize_rules=parse_json_model(normalize_rules, NormalizeRules),
         skip_spacers=skip_spacers,
         header_row=header_row,
         target_sheet=target_sheet,
-        key_columns=_parse_json_list(key_columns),
-        field_map=_parse_json_dict(field_map),
-        column_aliases=_parse_json_dict(column_aliases),
-        required_columns=_parse_json_list(required_columns),
-        expected_sheets=_parse_json_list(expected_sheets),
+        key_columns=parse_json_list(key_columns),
+        field_map=parse_json_dict(field_map),
+        column_aliases=parse_json_dict(column_aliases),
+        required_columns=parse_json_list(required_columns),
+        expected_sheets=parse_json_list(expected_sheets),
         output_sheet_naming=output_sheet_naming,  # type: ignore[arg-type]
         add_log=add_log,
         template_path=template_path,

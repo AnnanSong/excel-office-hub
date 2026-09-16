@@ -142,3 +142,51 @@ git push
 ```
 
 推送后 GitHub Pages 会自动重新构建，Render 也会自动重新部署，无需手动操作。
+
+---
+
+## 故障排查：Actions 一启动就失败（几秒内红叉）
+
+### 症状
+推送后 GitHub Actions 里两个 workflow（`CI` 和 `Deploy to GitHub Pages`）
+几乎同时失败，耗时只有 **几秒**（说明还没跑到安装/构建步骤就挂了）。
+
+### 原因
+`pnpm/action-setup@v4` 会同时检查两个地方的 pnpm 版本声明：
+
+- workflow 里的 `with: version`
+- `package.json` 里的 `packageManager` 字段
+
+两者**不一致**时会直接硬报错并退出：
+
+```
+Error: Multiple versions of pnpm specified:
+  - version 10 in the GitHub Action config with the key "version"
+  - version pnpm@10.28.2 in the package.json with the key "packageManager"
+Remove one of these versions to avoid version mismatch errors like ERR_PNPM_BAD_PM_VERSION
+```
+
+### 解决
+**统一以 `package.json` 的 `packageManager` 为唯一版本来源**，
+删除 workflow 中 `pnpm/action-setup` 下面的 `with: version` 配置：
+
+```yaml
+# 错误写法
+- uses: pnpm/action-setup@v4
+  with:
+    version: 10
+
+# 正确写法（自动读取 packageManager）
+- uses: pnpm/action-setup@v4
+```
+
+对应文件：`.github/workflows/ci.yml`、`.github/workflows/deploy-pages.yml`。
+
+### 经验
+> 判断依据是**失败耗时**：几秒内失败 = 配置/环境层面出错（版本冲突、找不到文件）；
+> 几十秒到几分钟后才失败 = 真正的安装、构建或测试步骤出错。
+
+### 另一个常见坑：后端 lint 报错
+`CI` 里的 `ruff check app` 如果失败，也会让 workflow 变红。
+本项目已把 lint 错误全部清零，若后续新增代码触发 lint，按提示修正即可，
+不影响 `Deploy to GitHub Pages`（两者是独立 workflow，互不阻塞）。

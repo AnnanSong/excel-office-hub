@@ -1,32 +1,12 @@
-import json
+from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Response
-
+from app.api._parsers import parse_json_dict, parse_json_list
 from app.engines.aggregator import aggregate_excel
 from app.schemas.aggregate import AggregateConfig
 from app.schemas.job import ApiResponse
 from app.storage.files import save_result, save_upload
 
 router = APIRouter()
-
-
-def _parse_json_list(value: str | None) -> list[str] | None:
-    if not value:
-        return None
-    try:
-        parsed = json.loads(value)
-        return [str(x) for x in parsed] if isinstance(parsed, list) else [str(x).strip() for x in value.split(",") if x.strip()]
-    except json.JSONDecodeError:
-        return [str(x).strip() for x in value.split(",") if x.strip()]
-
-
-def _parse_json_dict(value: str | None) -> dict | None:
-    if not value:
-        return None
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail=f"参数不是合法 JSON: {value}")
 
 
 @router.post("/", response_model=ApiResponse)
@@ -51,10 +31,10 @@ async def aggregate_files(
     config = AggregateConfig(
         mode=mode,  # type: ignore[arg-type]
         target_sheet=target_sheet,
-        key_columns=_parse_json_list(key_columns),
-        field_map=_parse_json_dict(field_map),
-        column_aliases=_parse_json_dict(column_aliases),
-        required_columns=_parse_json_list(required_columns),
+        key_columns=parse_json_list(key_columns),
+        field_map=parse_json_dict(field_map),
+        column_aliases=parse_json_dict(column_aliases),
+        required_columns=parse_json_list(required_columns),
         keep_first_on_dup=keep_first_on_dup,
     )
 
@@ -104,5 +84,5 @@ def download_result(path: str):
     return Response(
         content=content,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename=aggregate_result.xlsx"},
+        headers={"Content-Disposition": "attachment; filename=aggregate_result.xlsx"},
     )

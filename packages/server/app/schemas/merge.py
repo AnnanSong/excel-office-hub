@@ -41,7 +41,10 @@ class MergeConfig(BaseModel):
 
     merge_mode: Literal["files", "sheets"] = Field(
         default="sheets",
-        description="files: 每个文件取一个 Sheet 堆叠(旧行为); sheets: 遍历每个文件全部 Sheet 按逻辑名分组(主表-明细分别汇总)",
+        description=(
+            "files: 每个文件取一个 Sheet 堆叠(旧行为); "
+            "sheets: 遍历每个文件全部 Sheet 按逻辑名分组(主表-明细分别汇总)"
+        ),
     )
     sheet_match: Literal["exact", "normalize"] = Field(
         default="normalize",
@@ -91,7 +94,9 @@ class MergeConfig(BaseModel):
     )
     template_path: str | None = Field(
         default=None,
-        description="可选汇总模板; 提供后按同名 Sheet 将数据填入模板(保留模板格式), 缺失模板 Sheet 标红",
+        description=(
+            "可选汇总模板; 提供后按同名 Sheet 将数据填入模板(保留模板格式), 缺失模板 Sheet 标红"
+        ),
     )
     keep_first_on_dup: bool = Field(
         default=True,

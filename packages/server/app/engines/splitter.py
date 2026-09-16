@@ -10,7 +10,6 @@ from openpyxl.utils import get_column_letter
 
 from app.schemas.split import SplitConfig
 
-
 # --------------------------------------------------------------------------- #
 # 工具函数
 # --------------------------------------------------------------------------- #
@@ -73,7 +72,8 @@ def _resolve_columns(spec_columns: list[str], header: list[str]) -> list[int]:
                 if 1 <= cand <= max(len(header), 1):
                     idx = cand
         if idx is None:
-            raise ValueError(f"拆分列不存在: {spec}（可用列名: {', '.join(c for c in header if c)}）")
+            avail = ", ".join(c for c in header if c)
+            raise ValueError(f"拆分列不存在: {spec}（可用列名: {avail}）")
         resolved.append(idx)
     return resolved
 
@@ -82,7 +82,14 @@ def _resolve_columns(spec_columns: list[str], header: list[str]) -> list[int]:
 # 格式保留：基于原 sheet 复制 + 删除不匹配行
 # --------------------------------------------------------------------------- #
 
-def _copy_range_with_style(src_ws, dst_wb, src_indices: list[int], dst_sheet_name: str, max_col: int, max_row: int):
+def _copy_range_with_style(
+    src_ws,
+    dst_wb,
+    src_indices: list[int],
+    dst_sheet_name: str,
+    max_col: int,
+    max_row: int,
+):
     """部分预留：当前实现改用 _sheet_for_group。"""
     raise NotImplementedError
 
@@ -292,7 +299,10 @@ def _split_by_column(input_path: Path, config: SplitConfig, source_sheet: str) -
                     sub = sub.copy()
                     sub["_来源文件"] = input_path.name
                     sub["_来源工作表"] = source_sheet
-                zf.writestr(file_name, _dataframe_to_excel_bytes(sub, source_sheet, config.header_row))
+                zf.writestr(
+                    file_name,
+                    _dataframe_to_excel_bytes(sub, source_sheet, config.header_row),
+                )
 
     wb_src.close()
     buffer.seek(0)
@@ -339,7 +349,10 @@ def _split_by_row_count(input_path: Path, config: SplitConfig, source_sheet: str
                     sub = sub.copy()
                     sub["_来源文件"] = input_path.name
                     sub["_来源工作表"] = source_sheet
-                zf.writestr(file_name, _dataframe_to_excel_bytes(sub, source_sheet, config.header_row))
+                zf.writestr(
+                    file_name,
+                    _dataframe_to_excel_bytes(sub, source_sheet, config.header_row),
+                )
 
     wb_src.close()
     buffer.seek(0)

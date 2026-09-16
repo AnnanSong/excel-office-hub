@@ -1,6 +1,6 @@
 import json
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Response
+from fastapi import APIRouter, File, Form, HTTPException, Response, UploadFile
 
 from app.engines.splitter import split_excel
 from app.schemas.job import ApiResponse
@@ -94,5 +94,5 @@ def download_result(path: str):
     return Response(
         content=content,
         media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename=split_result.zip"},
+        headers={"Content-Disposition": "attachment; filename=split_result.zip"},
     )

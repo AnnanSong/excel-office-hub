@@ -1,5 +1,4 @@
 import io
-from pathlib import Path
 from typing import Any
 
 import openpyxl
@@ -87,7 +86,10 @@ def aggregate_excel(
 
         # 读取指定 sheet 或第一个
         wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
-        sheet_name = target_sheet if target_sheet and target_sheet in wb.sheetnames else wb.sheetnames[0]
+        if target_sheet and target_sheet in wb.sheetnames:
+            sheet_name = target_sheet
+        else:
+            sheet_name = wb.sheetnames[0]
         wb.close()
 
         df = pd.read_excel(path, sheet_name=sheet_name)
@@ -103,7 +105,11 @@ def aggregate_excel(
         for raw_col in original_columns:
             raw_norm = _normalize_header(raw_col)
             mapped = column_map.get(raw_norm, raw_norm)
-            if config.field_map and raw_norm in config.field_map and mapped != config.field_map[raw_norm]:
+            if (
+                config.field_map
+                and raw_norm in config.field_map
+                and mapped != config.field_map[raw_norm]
+            ):
                 # 被 field_map 指定但列不存在，已在上方处理为未命中
                 pass
 

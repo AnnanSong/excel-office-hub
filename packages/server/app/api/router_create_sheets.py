@@ -62,5 +62,5 @@ def download_result(path: str):
     return Response(
         content=content,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename=created_sheets.xlsx"},
+        headers={"Content-Disposition": "attachment; filename=created_sheets.xlsx"},
     )

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const features = [
   {
     title: '智能拆分',
-    desc: '按列、按行数或按 Sheet 拆分 Excel，输出 ZIP 打包下载。',
+    desc: '按列（支持多列组合）、按行数或按 Sheet 拆分，保留原表格式，文件名可带笔数。',
     href: '/split',
     status: '可用',
   },
@@ -14,26 +14,32 @@ const features = [
     status: '可用',
   },
   {
+    title: '多表合并汇总',
+    desc: '遍历全部 Sheet 按归一化名称分组汇总，去重、缺失标红、导入日志、模板保格式。',
+    href: '/merge',
+    status: '可用',
+  },
+  {
+    title: '数据比对',
+    desc: '按关键字段匹配两版数据，忽略行顺序，高亮新增 / 删除 / 修改。',
+    href: '/compare',
+    status: '可用',
+  },
+  {
     title: '批量建表',
     desc: '按名称列表批量创建工作表，可预设统一表头。',
     href: '/create-sheets',
     status: '可用',
   },
   {
+    title: '数据校验',
+    desc: '规则引擎检查必填 / 类型 / 范围 / 枚举 / 格式 / 勾稽，输出校验报告。',
+    href: '/validate',
+    status: '可用',
+  },
+  {
     title: '报表分发与催办',
     desc: '拆分后自动按邮箱批量发送邮件。（开发中）',
-    href: '#',
-    status: '规划中',
-  },
-  {
-    title: '数据比对',
-    desc: '按关键字段匹配，忽略行顺序对比版本差异。（开发中）',
-    href: '#',
-    status: '规划中',
-  },
-  {
-    title: '数据校验',
-    desc: '可视化规则引擎，输出校验报告。（开发中）',
     href: '#',
     status: '规划中',
   },

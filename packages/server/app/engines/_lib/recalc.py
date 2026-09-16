@@ -16,9 +16,8 @@ import time
 import zipfile
 from pathlib import Path
 
-from soffice import get_soffice_env, run_soffice
-
 from openpyxl import load_workbook
+from soffice import get_soffice_env, run_soffice
 
 MACRO_FILENAME = "Module1.xba"
 SOFFICE_MISSING = "soffice not found on PATH; LibreOffice is required to recalculate"
@@ -107,7 +106,7 @@ def external_links_at_risk(filename):
         at_risk = []
         for sheet in formulas.sheetnames:
             ws = formulas[sheet]
-            if not hasattr(ws, "iter_rows"):  
+            if not hasattr(ws, "iter_rows"):
                 continue
             cached = values[sheet]
             for row in ws.iter_rows():
@@ -132,13 +131,13 @@ def recalc(filename, timeout=30, force=False):
 
     try:
         get_soffice_env()
-    except Exception as e:  
+    except Exception as e:
         return {"error": f"Could not prepare the LibreOffice environment: {e}"}
 
     if not force:
         try:
             at_risk = external_links_at_risk(filename)
-        except Exception as e:  
+        except Exception as e:
             return {"error": f"Could not inspect {filename} for external links: {e}"}
         if at_risk:
             shown = at_risk[:MAX_LOCATIONS]
@@ -185,7 +184,10 @@ def _recalc_with_profile(filename, abs_path, timeout, profile_dir: Path):
     elif platform.system() == "Darwin" and has_gtimeout():
         cmd = ["gtimeout", str(timeout)] + cmd
 
-    timed_out = f"LibreOffice timed out after {timeout}s; formulas were NOT recalculated. Re-run with a longer timeout."
+    timed_out = (
+        f"LibreOffice timed out after {timeout}s; formulas were NOT recalculated. "
+        "Re-run with a longer timeout."
+    )
 
     try:
         result = subprocess.run(
@@ -228,7 +230,7 @@ def _recalc_with_profile(filename, abs_path, timeout, profile_dir: Path):
 
         for sheet_name in wb.sheetnames:
             ws = wb[sheet_name]
-            if not hasattr(ws, "iter_rows"):  
+            if not hasattr(ws, "iter_rows"):
                 continue
             for row in ws.iter_rows():
                 for cell in row:
@@ -259,7 +261,7 @@ def _recalc_with_profile(filename, abs_path, timeout, profile_dir: Path):
         formula_count = 0
         for sheet_name in wb_formulas.sheetnames:
             ws = wb_formulas[sheet_name]
-            if not hasattr(ws, "iter_rows"):  
+            if not hasattr(ws, "iter_rows"):
                 continue
             for row in ws.iter_rows():
                 for cell in row:

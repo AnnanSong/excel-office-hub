@@ -8,12 +8,12 @@ on:
 
 jobs:
   web:
+    name: 前端构建
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 不指定 version：自动读取 package.json 的 packageManager（单一事实来源）
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -21,21 +21,31 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:web
 
-  server:
+  server-lint:
+    name: 后端静态检查
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libreoffice-calc
-      - name: Install Python dependencies
-        working-directory: ./packages/server
-        run: |
-          pip install -e ".[dev]"
+      - name: Install ruff
+        run: pip install ruff
       - name: Lint with ruff
         working-directory: ./packages/server
         run: ruff check app
+
+  server-import:
+    name: 后端可导入检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python dependencies
+        working-directory: ./packages/server
+        run: pip install -e .
+      - name: 验证应用可加载（不依赖 LibreOffice）
+        working-directory: ./packages/server
+        run: python -c "import app.main"

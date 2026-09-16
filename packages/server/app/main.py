@@ -4,9 +4,15 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 
-from app.api import router_create_sheets, router_split, router_aggregate, router_merge
+from app.api import (
+    router_aggregate,
+    router_compare,
+    router_create_sheets,
+    router_merge,
+    router_split,
+    router_validate,
+)
 from app.core.config import settings
 from app.core.db import init_db
 
@@ -38,6 +44,8 @@ app.include_router(router_split.router, prefix="/api/split", tags=["拆分"])
 app.include_router(router_aggregate.router, prefix="/api/aggregate", tags=["汇总"])
 app.include_router(router_create_sheets.router, prefix="/api/create-sheets", tags=["建表"])
 app.include_router(router_merge.router, prefix="/api/merge", tags=["合并汇总"])
+app.include_router(router_compare.router, prefix="/api/compare", tags=["数据比对"])
+app.include_router(router_validate.router, prefix="/api/validate", tags=["数据校验"])
 
 
 @app.get("/health", tags=["健康检查"])

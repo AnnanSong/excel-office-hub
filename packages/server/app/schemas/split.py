@@ -21,11 +21,18 @@ class SplitConfig(BaseModel):
         default="_",
         description="多列组合时在文件名中连接各列值所用的分隔符",
     )
-    row_count: int | None = Field(default=None, description="by_row_count 模式：每个文件多少行（不含表头）")
-    keep_columns: list[str] | None = Field(default=None, description="仅保留指定列，留空保留全部")
+    row_count: int | None = Field(
+        default=None, description="by_row_count 模式：每个文件多少行（不含表头）"
+    )
+    keep_columns: list[str] | None = Field(
+        default=None, description="仅保留指定列，留空保留全部"
+    )
     naming_template: str = Field(
         default="{value}",
-        description="输出文件名模板，支持 {value} / {index} / {sheet} / {count}（该组数据行数，即 X 笔）",
+        description=(
+            "输出文件名模板，支持 {value} / {index} / {sheet} / {count}"
+            "（该组数据行数，即 X 笔）"
+        ),
     )
     header_row: int = Field(
         default=1,

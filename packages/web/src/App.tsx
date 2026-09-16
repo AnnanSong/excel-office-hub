@@ -3,6 +3,8 @@ import Home from './features/Home'
 import SplitPage from './features/split/SplitPage'
 import AggregatePage from './features/aggregate/AggregatePage'
 import MergePage from './features/merge/MergePage'
+import ComparePage from './features/compare/ComparePage'
+import ValidatePage from './features/validate/ValidatePage'
 import CreateSheetsPage from './features/createSheets/CreateSheetsPage'
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
               <Link to="/split" className="hover:text-green-100">智能拆分</Link>
               <Link to="/aggregate" className="hover:text-green-100">多文件汇总</Link>
               <Link to="/merge" className="hover:text-green-100">多表合并</Link>
+              <Link to="/compare" className="hover:text-green-100">数据比对</Link>
+              <Link to="/validate" className="hover:text-green-100">数据校验</Link>
               <Link to="/create-sheets" className="hover:text-green-100">批量建表</Link>
             </nav>
           </div>
@@ -30,6 +34,8 @@ function App() {
           <Route path="/split" element={<SplitPage />} />
           <Route path="/aggregate" element={<AggregatePage />} />
           <Route path="/merge" element={<MergePage />} />
+          <Route path="/compare" element={<ComparePage />} />
+          <Route path="/validate" element={<ValidatePage />} />
           <Route path="/create-sheets" element={<CreateSheetsPage />} />
         </Routes>
       </main>
