@@ -1,0 +1,22 @@
+{
+  "name": "excel-office-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "基于 GitHub 生态的可交互 Excel 办公处理网站",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:server": "pnpm --filter server dev",
+    "build": "turbo run build",
+    "build:web": "pnpm --filter web build",
+    "build:server": "pnpm --filter server build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智表管家｜AI驱动的企业数据自动分发、收集与分析平台</title>
+
+  <style>
+    :root {
+      /* 品牌色 */
+      --primary: #0c519d;
+      --primary-dark: #07366b;
+      --primary-light: #eaf4fb;
+      --blue: #00a0e9;
+      --blue-light: #e5f6fd;
+      --orange: #f08300;
+      --orange-light: #fff7ed;
+      --yellow: #fcc800;
+      --yellow-light: #fffbea;
+
+      /* 中性色 */
+      --text: #233444;
+      --gray-text: #5e6b78;
+      --gray: #9fa0a0;
+      --line: #dce7f0;
+      --light-bg: #f6f9fb;
+      --white: #ffffff;
+
+      --shadow: 0 12px 30px rgba(12, 81, 157, 0.12);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      color: var(--text);
+      background: #061f3d;
+      font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    }
+
+    /* =========================
+       PPT 容器与页面
+       ========================= */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 4.2vh 5.8vw 5.5vh;
+      overflow: hidden;
+      background: var(--white);
+      animation: slideIn 0.42s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* =========================
+       通用标题区
+       ========================= */
+    .header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-shrink: 0;
+      padding-bottom: 1.7vh;
+      margin-bottom: 2.3vh;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1.2vw;
+      min-width: 0;
+    }
+
+    .title-mark {
+      width: 7px;
+      height: 49px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--orange);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--primary);
+      font-size: clamp(27px, 2.32vw, 45px);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 7px 0 0;
+      color: var(--gray-text);
+      font-size: clamp(14px, 1.05vw, 20px);
+      line-height: 1.4;
+    }
+
+    .page-label {
+      flex-shrink: 0;
+      margin-left: 20px;
+      color: var(--gray);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    /* 通用文字 */
+    .accent {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .blue-text {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    /* =========================
+       第1页：封面
+       ========================= */
+    .cover {
+      color: #fff;
+      background:
+        radial-gradient(circle at 82% 39%, rgba(0, 160, 233, 0.3), transparent 20%),
+        radial-gradient(circle at 70% 76%, rgba(240, 131, 0, 0.16), transparent 22%),
+        linear-gradient(135deg, #062b58 0%, #0c519d 54%, #07366b 100%);
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      top: -15vh;
+      right: -9vw;
+      width: 55vw;
+      height: 55vw;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 4vw rgba(255, 255, 255, 0.03),
+        0 0 0 9vw rgba(255, 255, 255, 0.025),
+        0 0 0 15vw rgba(255, 255, 255, 0.02);
+    }
+
+    .cover .content {
+      position: relative;
+      z-index: 2;
+      justify-content: center;
+      padding-left: 3vw;
+    }
+
+    .cover-kicker {
+      margin-bottom: 2vh;
+      color: #9de1ff;
+      font-family: Arial, sans-serif;
+      font-size: clamp(14px, 1.12vw, 21px);
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .cover h1 {
+      color: #fff;
+      font-size: clamp(52px, 5.25vw, 90px);
+      line-height: 1.1;
+      letter-spacing: 3px;
+    }
+
+    .cover h1 span {
+      color: #ffb24c;
+    }
+
+    .cover-subtitle {
+      max-width: 760px;
+      margin-top: 2.5vh;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: clamp(20px, 1.65vw, 31px);
+      line-height: 1.6;
+    }
+
+    .cover-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4vh;
+    }
+
+    .cover-tag {
+      padding: 9px 18px;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.09);
+      font-size: 15px;
+    }
+
+    .cover-visual {
+      position: absolute;
+      z-index: 1;
+      top: 22vh;
+      right: 9vw;
+      display: grid;
+      width: 32vw;
+      height: 32vw;
+      place-items: center;
+    }
+
+    .cover-orbit {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.27);
+      border-radius: 50%;
+    }
+
+    .cover-orbit::before,
+    .cover-orbit::after {
+      content: "";
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      box-shadow: 0 0 18px rgba(240, 131, 0, 0.85);
+    }
+
+    .cover-orbit::before {
+      top: 10%;
+      left: 13%;
+      background: var(--orange);
+    }
+
+    .cover-orbit::after {
+      right: 8%;
+      bottom: 17%;
+      background: var(--yellow);
+      box-shadow: 0 0 18px rgba(252, 200, 0, 0.85);
+    }
+
+    .ai-core {
+      display: grid;
+      width: max(12vw, 155px);
+      height: max(12vw, 155px);
+      place-items: center;
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.56);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #3ac3ff, #0c519d 60%, #062b58);
+      box-shadow:
+        0 0 45px rgba(0, 160, 233, 0.75),
+        inset 0 0 28px rgba(255, 255, 255, 0.25);
+      font-size: clamp(20px, 2vw, 34px);
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .cover-footer {
+      position: absolute;
+      bottom: 4vh;
+      left: 6vw;
+      z-index: 2;
+      color: rgba(255, 255, 255, 0.67);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    /* =========================
+       第2页：项目背景
+       ========================= */
+    .three-columns {
+      display: grid;
+      grid-template-columns: 1.08fr 1fr 1fr;
+      gap: 1.7vw;
+      align-items: stretch;
+    }
+
+    .panel {
+      padding: 2.1vh 1.7vw;
+      border: 1px solid #dce7f0;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(12, 81, 157, 0.06);
+    }
+
+    .panel h3 {
+      margin: 0 0 1.45vh;
+      color: var(--primary);
+      font-size: clamp(19px, 1.35vw, 25px);
+    }
+
+    .panel ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .panel li {
+      position: relative;
+      padding: 9px 0 9px 20px;
+      color: #3d4d5c;
+      border-bottom: 1px dashed #e3ebf1;
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.4;
+    }
+
+    .panel li:last-child {
+      border-bottom: 0;
+    }
+
+    .panel li::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .stat-panel {
+      color: #fff;
+      border: none;
+      background: linear-gradient(150deg, #0c519d, #07366b);
+    }
+
+    .stat-panel h3 {
+      color: #fff;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5vh 1vw;
+    }
+
+    .stat {
+      padding: 4px 0 4px 12px;
+      border-left: 2px solid #5dd0ff;
+    }
+
+    .stat b {
+      display: block;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: clamp(28px, 2.35vw, 43px);
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 5px;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: clamp(12px, 0.86vw, 16px);
+      line-height: 1.35;
+    }
+
+    .bottom-statement {
+      margin-top: 2vh;
+      padding: 1.55vh 1.6vw;
+      color: var(--primary-dark);
+      border-left: 6px solid var(--orange);
+      border-radius: 0 10px 10px 0;
+      background: var(--orange-light);
+      font-size: clamp(16px, 1.2vw, 22px);
+      font-weight: 700;
+    }
+
+    /* =========================
+       第3页：流程与痛点
+       ========================= */
+    .process-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      margin: 0.4vh 0 2.8vh;
+    }
+
+    .process-item {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .process-item:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 18px;
+      right: -13px;
+      color: var(--orange);
+      font-size: 29px;
+      font-weight: 700;
+    }
+
+    .process-icon {
+      display: grid;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 9px;
+      place-items: center;
+      color: #fff;
+      border-radius: 16px;
+      background: var(--primary);
+      box-shadow: 0 8px 15px rgba(12, 81, 157, 0.18);
+      font-size: 27px;
+    }
+
+    .process-item:nth-child(2) .process-icon,
+    .process-item:nth-child(5) .process-icon {
+      background: var(--blue);
+    }
+
+    .process-item:nth-child(3) .process-icon {
+      background: var(--orange);
+    }
+
+    .process-item strong {
+      color: var(--primary);
+      font-size: clamp(14px, 1.02vw, 19px);
+      line-height: 1.35;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.15vw;
+    }
+
+    .pain-card {
+      position: relative;
+      min-height: 120px;
+      padding: 17px 16px 15px 62px;
+      border: 1px solid #e1e9ef;
+      border-radius: 13px;
+      background: #f7f9fb;
+    }
+
+    .pain-no {
+      position: absolute;
+      top: 15px;
+      left: 16px;
+      color: var(--orange);
+      font-family: Arial, sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .pain-card h4 {
+      margin: 0 0 7px;
+      color: var(--primary);
+      font-size: clamp(15px, 1.08vw, 20px);
+    }
+
+    .pain-card p {
+      margin: 0;
+      color: var(--gray-text);
+      font-size: clamp(12px, 0.88vw, 16px);
+      line-height: 1.48;
+    }
+
+    /* =========================
+       第4页：六大能力
+       ========================= */
+    .solution-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.35vw;
+      align-items: stretch;
+    }
+
+    .solution-card {
+      position: relative;
+      min-height: 205px;
+      padding: 1.75vh 1.4vw;
+      border-top: 5px solid var(--blue);
+      border-radius: 15px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .solution-card:nth-child(3),
+    .solution-card:nth-child(5) {
+      border-top-color: var(--orange);
+      background: linear-gradient(180deg, #fff9f1, #fff);
+    }
+
+    .solution-number {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      margin-bottom: 8px;
+      place-items: center;
+      color: var(--primary);
+      border-radius: 50%;
+      background: var(--blue-light);
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+    }
+
+    .solution-card:nth-child(3) .solution-number,
+    .solution-card:nth-child(5) .solution-number {
+      color: #fff;
+      background: var(--orange);
+    }
+
+    .solution-icon {
+      margin-bottom: 6px;
+      font-size: 29px;
+    }
+
+    .solution-card h3 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: clamp(16px, 1.1vw, 20px);
+      line-height: 1.32;
+    }
+
+    .solution-card p {
+      margin: 0;
+      color: var(--gray-text);
+      font-size: clamp(12px, 0.82vw, 15px);
+      line-height: 1.56;
+    }
+
+    .solution-footer {
+      margin-top: 1.9vh;
+      color: var(--primary);
+      font-size: clamp(15px, 1.1vw, 20px);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* =========================
+       第5页：AI亮点
+       ========================= */
+    .compare-layout {
+      display: grid;
+      grid-template-columns: 1.06fr 0.94fr;
+      gap: 2.1vw;
+      align-items: center;
+    }
+
+    .compare-table {
+      width: 100%;
+      overflow: hidden;
+      border-spacing: 0;
+      border-collapse: separate;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .compare-table th {
+      padding: 15px 18px;
+      color: #fff;
+      background: var(--primary);
+      font-size: clamp(16px, 1.08vw, 20px);
+      text-align: left;
+    }
+
+    .compare-table th:last-child {
+      background: var(--blue);
+    }
+
+    .compare-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #e0e8ef;
+      font-size: clamp(13px, 0.95vw, 18px);
+      line-height: 1.4;
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table td:first-child {
+      color: var(--primary);
+      background: #f4f8fb;
+      font-weight: 700;
+    }
+
+    .compare-table td:last-child {
+      color: #3e596d;
+      background: #fff;
+    }
+
+    .ai-highlight {
+      padding: 2.3vh 1.9vw;
+      color: #fff;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #0c519d, #00a0e9);
+      box-shadow: var(--shadow);
+    }
+
+    .ai-badge {
+      display: inline-block;
+      padding: 7px 12px;
+      margin-bottom: 1.4vh;
+      color: #fff;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.18);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+
+    .ai-highlight h2 {
+      margin: 0 0 1.5vh;
+      color: #fff;
+      font-size: clamp(23px, 1.95vw, 35px);
+      line-height: 1.32;
+    }
+
+    .question {
+      margin: 10px 0;
+      padding: 11px 13px;
+      color: #e9f9ff;
+      border-left: 3px solid var(--yellow);
+      background: rgba(0, 0, 0, 0.13);
+      font-size: clamp(13px, 0.92vw, 17px);
+      line-height: 1.42;
+    }
+
+    /* =========================
+       第6页：价值
+       ========================= */
+    .value-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 2vw;
+      align-items: stretch;
+    }
+
+    .value-numbers {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.8vh 2vw;
+      color: #fff;
+      border-radius: 18px;
+      background: linear-gradient(155deg, #07366b, #0c519d);
+    }
+
+    .value-numbers h3 {
+      margin: 0 0 2vh;
+      color: #bfeaff;
+      font-size: clamp(18px, 1.3vw, 24px);
+    }
+
+    .big-number {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 1.4vh 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .big-number:last-of-type {
+      border-bottom: none;
+    }
+
+    .big-number b {
+      color: #ffb24c;
+      font-family: Arial, sans-serif;
+      font-size: clamp(45px, 4.5vw, 76px);
+      line-height: 1;
+    }
+
+    .big-number span {
+      color: #fff;
+      font-size: clamp(16px, 1.12vw, 21px);
+      line-height: 1.38;
+    }
+
+    .big-number small {
+      color: rgba(255, 255, 255, 0.73);
+      font-size: 0.75em;
+    }
+
+    .calc-note {
+      margin-top: 1.2vh;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .business-values {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.1vw;
+    }
+
+    .business-card {
+      padding: 1.6vh 1.25vw;
+      border: 1px solid #dce7f0;
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .business-card .icon {
+      margin-bottom: 5px;
+      font-size: 29px;
+    }
+
+    .business-card h4 {
+      margin: 0 0 6px;
+      color: var(--primary);
+      font-size: clamp(15px, 1.06vw, 19px);
+    }
+
+    .business-card p {
+      margin: 0;
+      color: var(--gray-text);
+      font-size: clamp(12px, 0.84vw, 15px);
+      line-height: 1.47;
+    }
+
+    /* =========================
+       第7页：项目蓝图
+       ========================= */
+    .roadmap {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2vw;
+      margin: 1vh 3vw 3vh;
+    }
+
+    .roadmap::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 42px;
+      right: 14%;
+      left: 14%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--orange));
+    }
+
+    .roadmap-stage {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .stage-dot {
+      display: grid;
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 17px;
+      place-items: center;
+      color: #fff;
+      border: 7px solid #e8f5fb;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 7px 16px rgba(12, 81, 157, 0.2);
+      font-family: Arial, sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .roadmap-stage:nth-child(2) .stage-dot {
+      background: var(--blue);
+    }
+
+    .roadmap-stage:nth-child(3) .stage-dot {
+      background: var(--orange);
+    }
+
+    .roadmap-stage h3 {
+      margin: 0 0 10px;
+      color: var(--primary);
+      font-size: clamp(18px, 1.3vw, 24px);
+    }
+
+    .roadmap-stage p {
+      max-width: 300px;
+      margin: auto;
+      color: var(--gray-text);
+      font-size: clamp(13px, 0.95vw, 17px);
+      line-height: 1.58;
+    }
+
+    .goal-box {
+      padding: 2.45vh 3vw;
+      color: #fff;
+      border-radius: 18px;
+      background: linear-gradient(100deg, #07366b, #0c519d, #007eb7);
+      text-align: center;
+    }
+
+    .goal-label {
+      color: #a8e4ff;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .goal-box h2 {
+      margin: 9px 0 0;
+      color: #fff;
+      font-size: clamp(23px, 2.15vw, 38px);
+      line-height: 1.4;
+    }
+
+    .goal-box .orange {
+      color: #ffb24c;
+    }
+
+    /* =========================
+       翻页控制与备注
+       ========================= */
+    .nav {
+      position: fixed;
+      z-index: 50;
+      right: 24px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .nav button {
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      background: rgba(7, 54, 107, 0.88);
+      font-size: 21px;
+      transition: all 0.2s ease;
+    }
+
+    .nav button:hover {
+      background: var(--orange);
+      transform: translateY(-2px);
+    }
+
+    .counter {
+      min-width: 52px;
+      padding: 9px 8px;
+      color: #fff;
+      border-radius: 18px;
+      background: rgba(7, 54, 107, 0.88);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .notes {
+      display: none;
+      position: fixed;
+      z-index: 60;
+      right: 24px;
+      bottom: 20px;
+      left: 24px;
+      max-height: 27vh;
+      padding: 16px 20px;
+      overflow: auto;
+      color: #334455;
+      border-left: 5px solid var(--orange);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .notes.show {
+      display: block;
+    }
+
+    .notes strong {
+      color: var(--primary);
+    }
+
+    /* 小屏幕适配 */
+    @media (max-width: 1000px) {
+      .slide {
+        padding: 3.8vh 4vw 5.5vh;
+      }
+
+      .solution-card {
+        min-height: 185px;
+      }
+
+      .process-icon {
+        width: 52px;
+        height: 52px;
+      }
+
+      .process-item:not(:last-child)::after {
+        right: -11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="deck">
+
+    <!-- =========================
+         第1页：封面
+         ========================= -->
+    <section
+      class="slide cover active"
+      data-note="大家好，今天汇报的项目是“智表管家”。它是一个始于财务及经营数据场景、并可逐步扩展至全公司职能部门的数据自动分发、收集、整理、汇总、对比与分析平台。项目希望解决固定模板、固定周期、固定责任人的数据收集工作中，大量依赖人工拆分、分发、催收、校验和汇总的问题，最终让人员从处理表格转向分析数据和支持决策。"
+    >
+      <div class="content">
+        <div class="cover-kicker">ENTERPRISE DATA COLLABORATION PLATFORM</div>
+
+        <h1>智表<span>管家</span></h1>
+
+        <div class="cover-subtitle">
+          AI驱动的财务 / 经营数据报表<br />
+          自动分发、收集与分析平台
+        </div>
+
+        <div class="cover-tags">
+          <span class="cover-tag">自动分发</span>
+          <span class="cover-tag">智能收集</span>
+          <span class="cover-tag">AI校验</span>
+          <span class="cover-tag">统一汇总</span>
+          <span class="cover-tag">版本对比</span>
+          <span class="cover-tag">数据洞察</span>
+        </div>
+      </div>
+
+      <div class="cover-visual">
+        <div class="cover-orbit"></div>
+        <div class="ai-core">AI<br />数据中枢</div>
+      </div>
+
+      <div class="cover-footer">
+        始于财务部 · 逐步覆盖职能部门 · 沉淀企业级数据资产
+      </div>
+    </section>
+
+    <!-- =========================
+         第2页：项目背景
+         ========================= -->
+    <section
+      class="slide"
+      data-note="目前，财务部以及部分统计上报工作中，存在大量周期性的数据收集场景，例如工资信息、季度研发数据、AROR、预提、RP报表及年度汇算清缴等。虽然模板、收集周期和责任部门相对固定，但每一期仍需重新组织和推动。当前涉及60多位填写人员、约7家公司主体。仅以收集及初步沟通估算，月均约5类报表、每类两轮、覆盖7家公司主体，约投入0.2个FTE。问题不在于单张表是否复杂，而在于跨部门、多主体、重复性协同产生的管理成本。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>项目背景：高频、跨部门、重复性的报表协同场景</h1>
+            <p class="subtitle">固定模板、固定周期、固定责任人，但每期仍依赖人工组织与流转</p>
+          </div>
+        </div>
+        <div class="page-label">01 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="three-columns">
+          <div class="panel">
+            <h3>典型数据场景</h3>
+            <ul>
+              <li>多公司主体工资信息</li>
+              <li>季度研发数据</li>
+              <li>AROR、预提、RP报表</li>
+              <li>年度汇算清缴</li>
+              <li>其他周期性统计上报</li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <h3>场景共性</h3>
+            <ul>
+              <li>数据模板相对固定</li>
+              <li>月度、季度、年度定期收集</li>
+              <li>责任部门及填写人员明确</li>
+              <li>跨公司主体、跨部门协同</li>
+              <li>需要整理、汇总、对比和分析</li>
+            </ul>
+          </div>
+
+          <div class="panel stat-panel">
+            <h3>当前协同规模</h3>
+
+            <div class="stat-grid">
+              <div class="stat">
+                <b>60+</b>
+                <span>协同填写人员</span>
+              </div>
+
+              <div class="stat">
+                <b>7</b>
+                <span>公司主体覆盖</span>
+              </div>
+
+              <div class="stat">
+                <b>5类</b>
+                <span>月均收集报表</span>
+              </div>
+
+              <div class="stat">
+                <b>2轮</b>
+                <span>平均每类收集频次</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-statement">
+          仅“收集与初步沟通”环节，当前已投入约
+          <span class="accent">0.2 FTE / 月</span>。
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         第3页：现状流程与痛点
+         ========================= -->
+    <section
+      class="slide"
+      data-note="当前一张报表从发起到输出，通常要经过准备总表、拆分分发、填写催收、数据校验、汇总合并及版本对比、分析输出六个环节。真正体现业务价值的是最后的数据分析、异常跟进和经营洞察，但实际大量时间消耗在表格拆分、沟通催收、复制粘贴和版本核对上。尤其在多轮修改场景中，版本之间往往只有部分数据变化，人工难以快速定位修改项，也增加了重复汇总和遗漏风险。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>现状流程与痛点</h1>
+            <p class="subtitle">大量时间花在“表格流转”，而非“数据分析”</p>
+          </div>
+        </div>
+        <div class="page-label">02 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="process-line">
+          <div class="process-item">
+            <div class="process-icon">▤</div>
+            <strong>准备总表</strong>
+          </div>
+
+          <div class="process-item">
+            <div class="process-icon">✉</div>
+            <strong>拆分分发</strong>
+          </div>
+
+          <div class="process-item">
+            <div class="process-icon">♟</div>
+            <strong>填写 / 催收</strong>
+          </div>
+
+          <div class="process-item">
+            <div class="process-icon">✓</div>
+            <strong>数据校验</strong>
+          </div>
+
+          <div class="process-item">
+            <div class="process-icon">⇄</div>
+            <strong>汇总合并<br />版本对比</strong>
+          </div>
+
+          <div class="process-item">
+            <div class="process-icon">▥</div>
+            <strong>分析输出</strong>
+          </div>
+        </div>
+
+        <div class="pain-grid">
+          <div class="pain-card">
+            <div class="pain-no">01</div>
+            <h4>重复操作多</h4>
+            <p>每期重复拆分表格、发送、催收、收集及合并。</p>
+          </div>
+
+          <div class="pain-card">
+            <div class="pain-no">02</div>
+            <h4>进度不透明</h4>
+            <p>提交状态难以实时掌握，催收依赖人工逐一沟通。</p>
+          </div>
+
+          <div class="pain-card">
+            <div class="pain-no">03</div>
+            <h4>数据质量风险高</h4>
+            <p>漏填、错填、格式不统一及口径不一致，人工核验成本高。</p>
+          </div>
+
+          <div class="pain-card">
+            <div class="pain-no">04</div>
+            <h4>异常发现滞后</h4>
+            <p>环比、同比、预算差异主要依赖人工识别，容易遗漏。</p>
+          </div>
+
+          <div class="pain-card">
+            <div class="pain-no">05</div>
+            <h4>汇总与版本效率低</h4>
+            <p>版本混乱、复制错误、重复汇总风险高；部分修改难以快速定位。</p>
+          </div>
+
+          <div class="pain-card">
+            <div class="pain-no">06</div>
+            <h4>分析产出滞后</h4>
+            <p>基础整理占用大量时间，异常跟进及经营洞察不足。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         第4页：解决方案 / 六大能力
+         ========================= -->
+    <section
+      class="slide"
+      data-note="针对以上问题，智表管家拟构建从分发、收集、校验、汇总、版本对比到分析输出的端到端自动化闭环。系统不仅实现模板和任务的自动分发、进度可视化追踪、数据规则校验及统一汇总，也新增不同版本数据的智能对比能力：将上一版与最新版本自动比对，并通过汇总和高亮方式直观展示发生变化的数据与内容。这样可以显著降低多轮修改、版本核对和人工追踪的成本。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>构建“分发—收集—校验—汇总—对比&分析”自动化闭环</h1>
+            <p class="subtitle">从“人工表格流转”升级为“系统管流程、AI找异常、人员做分析”</p>
+          </div>
+        </div>
+        <div class="page-label">03 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="solution-flow">
+          <div class="solution-card">
+            <div class="solution-number">1</div>
+            <div class="solution-icon">▤</div>
+            <h3>模板化自动生成与分发</h3>
+            <p>统一模板，按公司主体、部门、人员或项目自动拆分；按既定周期自动推送。</p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-number">2</div>
+            <div class="solution-icon">◎</div>
+            <h3>智能收集与进度追踪</h3>
+            <p>自动回收填报数据，实时更新提交状态；对待提交、逾期任务自动提醒催收。</p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-number">3</div>
+            <div class="solution-icon">✦</div>
+            <h3>AI数据校验与异常识别</h3>
+            <p>支持必填、格式、勾稽校验，以及环比、同比、预算对比和异常预警。</p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-number">4</div>
+            <div class="solution-icon">☁</div>
+            <h3>自动合并与统一归档</h3>
+            <p>自动汇总至总表，处理字段、主体、重复数据及版本匹配问题，沉淀历史数据。</p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-number">5</div>
+            <div class="solution-icon">⇄</div>
+            <h3>不同版本数据对比</h3>
+            <p>自动对比上一版与最新数据，以汇总及高亮方式直观展示变动数据和修改内容。</p>
+          </div>
+
+          <div class="solution-card">
+            <div class="solution-number">6</div>
+            <div class="solution-icon">▥</div>
+            <h3>关键指标分析与报表输出</h3>
+            <p>自动生成趋势分析、指标看板、异常明细，并支持自然语言问数与结论输出。</p>
+          </div>
+        </div>
+
+        <div class="solution-footer">
+          模板发起　→　自动分发　→　智能收集　→　AI校验　→　统一汇总　→　版本对比　→　分析输出
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         第5页：AI亮点
+         ========================= -->
+    <section
+      class="slide"
+      data-note="智表管家的价值不只是自动收表和汇表，而是进一步通过AI帮助发现问题、解释问题。系统可自动发现填写异常、数据口径不一致以及环比、同比、预算差异；对于异常项目，可生成待确认问题清单和初步说明建议。管理人员也可以直接通过自然语言提问，例如查看预提费用环比变化、研发费用增幅最高的项目，或辅助分析某主体利润波动较大的可能原因。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>核心亮点：AI不只“收表”，更帮助发现问题、解释问题</h1>
+            <p class="subtitle">从流程自动化，进一步升级为数据质量管理与经营分析助手</p>
+          </div>
+        </div>
+        <div class="page-label">04 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="compare-layout">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>自动化能力</th>
+                <th>AI增强能力</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>自动拆分、分发、催收</td>
+                <td>识别填写异常与口径不一致</td>
+              </tr>
+
+              <tr>
+                <td>自动回收、汇总、归档</td>
+                <td>环比、同比、预算差异预警</td>
+              </tr>
+
+              <tr>
+                <td>规则化校验</td>
+                <td>生成待确认问题清单与异常说明建议</td>
+              </tr>
+
+              <tr>
+                <td>看板展示进度</td>
+                <td>自然语言查询数据结论</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="ai-highlight">
+            <div class="ai-badge">AI ANALYTICS ASSISTANT</div>
+
+            <h2>用“问问题”的方式<br />获得数据结论</h2>
+
+            <div class="question">“本月预提费用环比变化情况如何？”</div>
+            <div class="question">“研发费用增幅最高的项目 TOP5 是哪些？”</div>
+            <div class="question">“本月 XX 主体利润较上月变动较大的可能原因是什么？”</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         第6页：预期价值
+         ========================= -->
+    <section
+      class="slide"
+      data-note="从直接效率看，仅收集和汇总相关工作，汇总人员每月至少可节省0.2个FTE。对于60多位填写人员，按每月约3次操作、每次节约15分钟估算，整体可节约约45小时。更大的价值在于，当系统自动完成规则校验，并与历史数据、去年同期及预算进行对比后，异常发现将从依赖人工经验转向系统主动预警。这样人员可以投入更多时间解释变化、识别风险和支持经营决策。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>预期价值：节省时间、提升质量、释放分析能力</h1>
+            <p class="subtitle">既解决当前协同效率问题，也为后续经营分析与智能决策沉淀数据基础</p>
+          </div>
+        </div>
+        <div class="page-label">05 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="value-layout">
+          <div class="value-numbers">
+            <h3>可量化收益</h3>
+
+            <div class="big-number">
+              <b>0.2</b>
+              <span>
+                FTE / 月<br />
+                <small>汇总与收集人员节省</small>
+              </span>
+            </div>
+
+            <div class="big-number">
+              <b>45</b>
+              <span>
+                小时 / 月<br />
+                <small>60+填写人员效率释放</small>
+              </span>
+            </div>
+
+            <div class="calc-note">
+              测算逻辑：60+人 × 约3次操作 × 15分钟 / 次
+            </div>
+          </div>
+
+          <div class="business-values">
+            <div class="business-card">
+              <div class="icon">◷</div>
+              <h4>提升效率</h4>
+              <p>缩短月度、季度、年度数据收集及汇总周期。</p>
+            </div>
+
+            <div class="business-card">
+              <div class="icon">✓</div>
+              <h4>提高数据质量</h4>
+              <p>提前识别漏填、错填、口径不一与异常波动。</p>
+            </div>
+
+            <div class="business-card">
+              <div class="icon">◎</div>
+              <h4>降低协同成本</h4>
+              <p>任务、进度与催收自动化、可视化，减少反复沟通。</p>
+            </div>
+
+            <div class="business-card">
+              <div class="icon">⚡</div>
+              <h4>增强数据及时性</h4>
+              <p>数据回收后自动整理、汇总与分析，更快支撑决策。</p>
+            </div>
+
+            <div class="business-card">
+              <div class="icon">✦</div>
+              <h4>释放人力价值</h4>
+              <p>从低价值表格处理转向异常分析、业务判断与经营支持。</p>
+            </div>
+
+            <div class="business-card">
+              <div class="icon">▦</div>
+              <h4>沉淀数据资产</h4>
+              <p>统一模板、字段口径、校验规则及历史数据，支持复制推广。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         第7页：项目蓝图
+         ========================= -->
+    <section
+      class="slide"
+      data-note="项目将采取“先试点验证、再逐步复制推广”的推进方式。第一阶段，优先从工资信息、研发数据等模板固定、频次较高、参与人员较多的财务及经营数据场景切入，验证自动分发、智能收集、进度追踪、自动汇总和基础校验能力。第二阶段，逐步沉淀字段口径、校验规则、组织映射及历史数据对比逻辑，形成标准化、可复用的平台能力。第三阶段，在财务部门试点经验基础上，逐步推广到部门内部及其他职能部门的日常数据收集、整理、汇总、对比和分析场景，持续扩大平台使用范围。最终实现从人工催表、人工汇表，到系统管流程、AI找异常、人员做分析的转变。"
+    >
+      <div class="header">
+        <div class="title-wrap">
+          <div class="title-mark"></div>
+          <div>
+            <h1>项目蓝图：先试点验证，再逐步复制推广</h1>
+            <p class="subtitle">始于财务及经营数据场景，逐步覆盖职能部门，构建企业级数据协同能力</p>
+          </div>
+        </div>
+        <div class="page-label">06 / 06</div>
+      </div>
+
+      <div class="content">
+        <div class="roadmap">
+          <div class="roadmap-stage">
+            <div class="stage-dot">01</div>
+            <h3>试点搭建</h3>
+            <p>
+              优先聚焦工资信息、研发数据等
+              <span class="accent">模板固定、频次高、参与人多</span>
+              的财务及经营数据场景。
+            </p>
+          </div>
+
+          <div class="roadmap-stage">
+            <div class="stage-dot">02</div>
+            <h3>完善规则与数据沉淀</h3>
+            <p>
+              补充并沉淀字段口径、校验规则、组织映射及历史数据对比逻辑，
+              形成标准化、可复用的平台能力。
+            </p>
+          </div>
+
+          <div class="roadmap-stage">
+            <div class="stage-dot">03</div>
+            <h3>复制推广与智能分析</h3>
+            <p>
+              拓展至部门内部及其他职能部门的日常数据场景，
+              逐步扩大数据收集、整理、汇总、对比与分析的使用范围。
+            </p>
+          </div>
+        </div>
+
+        <div class="goal-box">
+          <div class="goal-label">PROJECT TARGET</div>
+          <h2>
+            从“<span class="orange">人工催表、人工汇表</span>”<br />
+            到“<span class="orange">系统管流程、AI找异常、人员做分析</span>”
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- 演讲备注面板 -->
+    <div class="notes" id="notes"></div>
+
+    <!-- 翻页控制 -->
+    <div class="nav">
+      <button onclick="prevSlide()" title="上一页">‹</button>
+      <div class="counter" id="counter">1 / 7</div>
+      <button onclick="nextSlide()" title="下一页">›</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const notes = document.getElementById("notes");
+
+    let current = 0;
+    let notesVisible = false;
+
+    function renderSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+
+      slides[current].classList.remove("active");
+      current = index;
+      slides[current].classList.add("active");
+
+      counter.textContent = `${current + 1} / ${slides.length}`;
+
+      const noteText = slides[current].dataset.note || "暂无演讲备注。";
+      notes.innerHTML = `<strong>演讲备注：</strong>${noteText}`;
+    }
+
+    function nextSlide() {
+      renderSlide(current + 1);
+    }
+
+    function prevSlide() {
+      renderSlide(current - 1);
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (
+        event.key === "ArrowRight" ||
+        event.key === "PageDown" ||
+        event.key === " "
+      ) {
+        event.preventDefault();
+        nextSlide();
+      }
+
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        prevSlide();
+      }
+
+      if (event.key.toLowerCase() === "n") {
+        notesVisible = !notesVisible;
+        notes.classList.toggle("show", notesVisible);
+      }
+
+      if (event.key === "Escape") {
+        notesVisible = false;
+        notes.classList.remove("show");
+      }
+    });
+
+    renderSlide(0);
+  </script>
+</body>
+</html>
