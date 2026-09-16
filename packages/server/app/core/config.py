@@ -12,7 +12,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./data/app.db"
     upload_dir: str = "./data/uploads"
     max_upload_size: int = 50 * 1024 * 1024  # 50MB
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:4173"]
+    # 用字符串承载，避免 pydantic-settings 对 list[str] 强制 JSON 解析。
+    # 多个来源用逗号分隔，通过 cors_origins_list 读取。
+    cors_origins: str = "http://localhost:5173,http://localhost:4173"
 
     # AI
     anthropic_api_key: str = ""
@@ -29,12 +31,11 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_tls: bool = True
 
-    @property
+        @property
     def cors_origins_list(self) -> list[str]:
-        origins = []
-        for origin in self.cors_origins:
-            origins.extend([o.strip() for o in str(origin).split(",")])
-        return origins
+        """把逗号分隔的 CORS_ORIGINS 展开成列表。"""
+        return [o.strip() for o in str(self.cors_origins).split(",") if o.strip()]
+
 
 
 settings = Settings()

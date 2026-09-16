@@ -1,37 +1,27 @@
 services:
   - type: web
     name: excel-office-hub-server
-    env: docker
+    runtime: docker
     dockerfilePath: ./packages/server/Dockerfile
-    repo: https://github.com/YOUR_USERNAME/excel-office-hub.git
+    dockerContext: ./packages/server
+    repo: https://github.com/AnnanSong/excel-office-hub.git
     branch: main
     plan: free
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         value: sqlite:///./data/app.db
       - key: UPLOAD_DIR
         value: ./data/uploads
       - key: MAX_UPLOAD_SIZE
-        value: 52428800
+        value: "52428800"
+      # 允许来自 GitHub Pages 前端的跨域请求（多个来源用逗号分隔）
       - key: CORS_ORIGINS
-        value: https://YOUR_USERNAME.github.io
+        value: https://annansong.github.io
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      # AI 能力（可选，留空则相关功能降级，不影响 Excel 处理）
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: GLM_API_KEY
         sync: false
-      - key: PYTHONUNBUFFERED
-        value: "1"
-    # 注意：免费实例不支持持久磁盘(disk)，Excel 处理为即用即弃，无需挂盘。
-    # 如需持久化历史任务，升级付费实例后再取消下面注释。
-    # disk:
-    #   name: data
-    #   mountPath: /app/data
-    #   sizeGB: 1
-
-staticSites:
-  - name: excel-office-hub-web
-    buildCommand: pnpm install --frozen-lockfile && GITHUB_PAGES_BASE=/ pnpm --filter web build
-    publishPath: ./packages/web/dist
-    repo: https://github.com/YOUR_USERNAME/excel-office-hub.git
-    branch: main
-    plan: free

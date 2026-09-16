@@ -34,11 +34,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(router_split.router, prefix="/api/split", tags=["拆分"])
 app.include_router(router_aggregate.router, prefix="/api/aggregate", tags=["汇总"])
@@ -50,7 +51,17 @@ app.include_router(router_validate.router, prefix="/api/validate", tags=["数据
 
 @app.get("/health", tags=["健康检查"])
 def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "excel-office-hub-server"}
+
+
+@app.get("/", tags=["健康检查"])
+def root():
+    return {
+        "status": "ok",
+        "message": "Excel Office Hub API is running",
+        "docs": "/docs",
+    }
+
 
 
 @app.exception_handler(Exception)
